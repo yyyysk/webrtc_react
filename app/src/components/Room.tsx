@@ -1,5 +1,7 @@
 import React from 'react';
 import { peer } from '../config/sw';
+import Message from './Message';
+import { useLocation } from "react-router-dom";
 import '../css/Room.css';
 
 interface Props {
@@ -12,6 +14,10 @@ interface Props {
 
 interface State {
   remoteVideos: any;
+  messages: {
+    user: string
+    message: string
+  }[]
 }
 
 class Room extends React.Component<Props, State> {
@@ -21,6 +27,7 @@ class Room extends React.Component<Props, State> {
   private localVideoRef: any;
   private remoteVideoRefs: any;
   private remoteStreams: any;
+  private userName: any;
 
   constructor(props: Props) {
     super(props);
@@ -35,7 +42,8 @@ class Room extends React.Component<Props, State> {
     this.remoteStreams = {};
     // state
     this.state = {
-      remoteVideos: []
+      remoteVideos: [],
+      messages: []
     };
   };
 
@@ -110,14 +118,24 @@ class Room extends React.Component<Props, State> {
       });
     });
 
+    // メッセージ送信
+    room.on('data', ({ data, src }) => {
+      const parsed = JSON.parse(data);
+      const messages = Object.assign([], this.state.messages);
+      messages.push({
+        user: parsed.user,
+        message: parsed.message
+      });
+      this.setState({messages: messages});
+    });
+
+
     // 自分が退出したとき
     room.once('close', () => {
       this.setState({
         remoteVideos: null
       });
     });
-
-    this.room = room;
 
     peer.on('error', console.error);
   };
@@ -138,16 +156,36 @@ class Room extends React.Component<Props, State> {
     });
   }
 
+  // Roomから離れたとき
   componentWillUnmount() {
-    this.room.close();
+    // this.room.close();
+  }
+
+
+  /**
+   * Message送信
+   */
+  sendMessage(message: string) {
+    const data = {
+      user: this.userName,
+      message: message
+    };
+    this.room.send(JSON.stringify(data));
+
+    const messages = Object.assign([], this.state.messages);
+      messages.push({
+        user: 'me',
+        message: message
+      });
+    this.setState({messages: messages});
   }
 
   render() {
     const remoteVideos = this.state.remoteVideos? Object.values(this.state.remoteVideos) : null;
+    const messages = this.state.messages.map((message) => <p style={{wordWrap: 'break-word', padding: '0 12px'}}>{message.user}: {message.message}</p>)
 
     return(
-      <div>
-        <h2 style={{color: '#333'}}>ROOMID: {this.roomId}</h2>
+      <div className='room'>
         <div className='room__remoteVideos'>
           <video
             id="localStream"
@@ -156,6 +194,12 @@ class Room extends React.Component<Props, State> {
             playsInline
             ></video>
           {remoteVideos}
+        </div>
+        <div className='room__spacer'></div>
+        <div className='room__footer'>
+          <h2 style={{color: '#333', padding: '0 12px'}}>ROOMID: {this.roomId}</h2>
+          <div className='room_messages'>{messages}</div>
+          <Message sendMessage={(message) => this.sendMessage(message)} />
         </div>
       </div>
     );
