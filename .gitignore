@@ -5,7 +5,7 @@
 app/node_modules
 /.pnp
 .pnp.js
-app/src/config/sw.ts
+# app/src/config/sw.ts
 
 # testing
 /coverage
