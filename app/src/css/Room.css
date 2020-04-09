@@ -1,0 +1,15 @@
+.room__remoteVideos {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.room__remoteVideos>video {
+    width: 50%;
+}
+
+@media screen and (max-width: 380px) {
+    .room__remoteVideos>video {
+        width: 100%;
+    }
+}

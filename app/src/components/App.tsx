@@ -5,10 +5,12 @@ import Room from './Room';
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Route exact path='/' component={Entry} />
-      <Route path='/rooms/:roomId' component={Room} />
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Route exact path='/' component={Entry} />
+        <Route path='/rooms/:roomId' component={Room} />
+      </BrowserRouter>
+    </>
   );
 }
 
