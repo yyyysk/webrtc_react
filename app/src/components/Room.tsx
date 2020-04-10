@@ -1,15 +1,16 @@
 import React from 'react';
 import { peer } from '../config/sw';
 import Message from './Message';
-import { useLocation } from "react-router-dom";
 import '../css/Room.css';
+import { Link } from 'react-router-dom';
 
 interface Props {
   match: {
     params: {
       roomId: string
     }
-  }
+  };
+  userName: string;
 };
 
 interface State {
@@ -39,12 +40,18 @@ class Room extends React.Component<Props, State> {
     // RemoteのVideoRef
     this.remoteVideoRefs = {};
     // RemoteのStreams
-    this.remoteStreams = {};
+    this.remoteStreams = {};    
     // state
     this.state = {
       remoteVideos: [],
       messages: []
     };
+    // ユーザー
+    if (props.userName === '' || !props.userName) {
+      this.userName = 'ユーザー';
+    } else {
+      this.userName = props.userName;
+    }
   };
 
   /**
@@ -80,7 +87,12 @@ class Room extends React.Component<Props, State> {
 
     // ユーザージョイン
     room.on('peerJoin', peerId => {
-      alert(`=== ${peerId} joined ===\n`);
+      const messages = Object.assign([], this.state.messages);
+      messages.push({
+        user: 'SYSTEM',
+        message: `新規ユーザーが参加しました。`
+      });
+      this.setState({messages: messages});
     });
 
     // 新しく入ってきたユーザーのストリーム表示
@@ -93,7 +105,7 @@ class Room extends React.Component<Props, State> {
           id={stream.peerId}
           key={stream.peerId}
           ref={this.remoteVideoRefs[stream.peerId]} // 今回追加したrefを指定
-          playsInline
+          playsInline={true}
           autoPlay
           ></video>);
 
@@ -137,6 +149,8 @@ class Room extends React.Component<Props, State> {
       });
     });
 
+    this.room = room;
+
     peer.on('error', console.error);
   };
 
@@ -159,6 +173,30 @@ class Room extends React.Component<Props, State> {
   // Roomから離れたとき
   componentWillUnmount() {
     // this.room.close();
+  }
+
+  // 音声ミュート
+  toggleMuteAudio(e: any) {
+    this.localVideoRef.current.srcObject.getAudioTracks().forEach((track: any) => {
+      track.enabled = !track.enabled;
+      if (track.enabled) {
+        e.target.src = '/img/mic.png';
+      } else {
+        e.target.src = '/img/mic--muted.png';
+      }
+    });
+  }
+
+  // 映像ミュート
+  toggleMuteVideo(e: any) {
+    this.localVideoRef.current.srcObject.getVideoTracks().forEach((track: any) => {
+      track.enabled = !track.enabled;
+      if (track.enabled) {
+        e.target.src = '/img/movie.png';
+      } else {
+        e.target.src = '/img/movie--muted.png';
+      }
+    });
   }
 
 
@@ -191,15 +229,19 @@ class Room extends React.Component<Props, State> {
             id="localStream"
             ref={this.localVideoRef}
             muted
-            playsInline
+            playsInline={true}
             ></video>
           {remoteVideos}
         </div>
-        <div className='room__spacer'></div>
         <div className='room__footer'>
-          <h2 style={{color: '#333', padding: '0 12px'}}>ROOMID: {this.roomId}</h2>
+          <h2 style={{color: '#333', padding: '12px'}}>ROOMID:<br></br> {this.roomId}</h2>
           <div className='room_messages'>{messages}</div>
           <Message sendMessage={(message) => this.sendMessage(message)} />
+          <div className='room__manuBox'>
+            <img width='30' height='30' src='/img/mic.png' onClick={(e) => this.toggleMuteAudio(e)}></img>
+            <img width='30' height='30' src='/img/movie.png' onClick={(e) => this.toggleMuteVideo(e)}></img>
+            <Link className='room__close' to='/'>接続終了</Link>
+          </div>
         </div>
       </div>
     );

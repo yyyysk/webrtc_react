@@ -112,6 +112,7 @@ input, select {
 
 html,body,#root {
   height: 100%;
+  overflow: scroll;
 }
 body {
   margin: 0;

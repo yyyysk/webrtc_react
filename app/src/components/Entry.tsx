@@ -4,11 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { peer } from '../config/sw';
 import '../css/Entry.css'
 
+interface Props {
+  setUserName: (name: string) => void;
+  userName: string;
+}
 
-const Entry = () => {
+const Entry = (props: Props) => {
   const newRoomId = uuidv4();
   const [roomId, setRoomId] = useState('');
-  const [name, setName] = useState('');
 
   /**
    * RoomId変更
@@ -17,8 +20,12 @@ const Entry = () => {
     setRoomId(e.target.value);
   };
 
+  /**
+   * ユーザー名変更
+   * @param e 
+   */
   const onNameChange = (e: any) => {
-    setName(e.target.value);
+    props.setUserName(e.target.value);
   };
 
   return(
@@ -35,8 +42,8 @@ const Entry = () => {
               <input style={{marginTop: '8px'}} className='entry__form__input' id="roomId" type="text" onChange={e => onRoomIdChange(e)} placeholder='ROOMIDを入力（JOINのみ）'></input>
               <p className='entry__note'>※Roomを新規作成する場合、ROOMIDは自動で作成されます。</p>
               <div className='entry__row'>
-                <Link className='entry__newLink' to={`/rooms/${newRoomId}?name=${name}`}>新規作成</Link>
-                <Link className='entry__joinLink' to={`/rooms/${roomId}?name=${name}`}>JOIN</Link>
+                <Link className='entry__newLink' to={`/rooms/${newRoomId}`}>新規作成</Link>
+                <Link className='entry__joinLink' to={`/rooms/${roomId}`}>JOIN</Link>
               </div>
             </div>
           </form>
