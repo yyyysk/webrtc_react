@@ -43,7 +43,7 @@ const Entry = (props: Props) => {
               <p className='entry__note'>※Roomを新規作成する場合、ROOMIDは自動で作成されます。</p>
               <div className='entry__row'>
                 <Link className='entry__newLink' to={`/rooms/${newRoomId}`}>新規作成</Link>
-                <Link className='entry__joinLink' to={`/rooms/${roomId}`}>JOIN</Link>
+                <Link onClick={(e) => {if (!roomId) e.preventDefault()}} className='entry__joinLink' to={`/rooms/${roomId}`}>JOIN</Link>
               </div>
             </div>
           </form>

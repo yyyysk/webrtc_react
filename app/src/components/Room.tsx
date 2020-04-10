@@ -240,7 +240,7 @@ class Room extends React.Component<Props, State> {
           <div className='room__manuBox'>
             <img width='30' height='30' src='/img/mic.png' onClick={(e) => this.toggleMuteAudio(e)}></img>
             <img width='30' height='30' src='/img/movie.png' onClick={(e) => this.toggleMuteVideo(e)}></img>
-            <Link className='room__close' to='/'>接続終了</Link>
+            <Link onClick={() => this.room.close()} className='room__close' to='/'>接続終了</Link>
           </div>
         </div>
       </div>
