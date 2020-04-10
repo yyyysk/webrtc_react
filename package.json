@@ -1,0 +1,21 @@
+{
+  "name": "innstudio",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server/bin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ysk-94/webrtc_react.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ysk-94/webrtc_react/issues"
+  },
+  "homepage": "https://github.com/ysk-94/webrtc_react#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
